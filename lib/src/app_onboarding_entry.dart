@@ -4,32 +4,66 @@ import 'package:app_onboarding/src/app_onboarding.dart';
 import 'package:app_onboarding/src/tooltip/app_custom_tooltip.dart';
 import 'package:flutter/material.dart';
 
-typedef CustomBuilder = Widget Function(
-  BuildContext context,
-  int index,
-)?;
-
 class TooltipSettings {
+
+  /// Complete button`s text
   final String? completeText;
+
+  /// Skip button`s text
   final String skipText;
+
+  /// Next button`s text
   final String nextText;
+
+  /// Text inside tooltip
   final String tooltipText;
+
+  /// Tooltip arrow`s position
   final AppCustomArrowPosition arrowPosition;
+
+  /// Tooltip direction
   final AppCustomTooltipDirection tooltipDirection;
-  final FutureOr<void> Function()? onPrevTap;
+
+  /// Callback for skip button. Call before hide [AppOnboardingEntry]
+  final FutureOr<void> Function()? onSkipTap;
+
+  /// Callback for complete button. Call before hide [AppOnboardingEntry]
   final FutureOr<void> Function()? onCompleteTap;
+
+  /// Callback for next button. Call after hide [AppOnboardingEntry] but before next [AppOnboardingEntry].
+  /// You may scroll to next [AppOnboardingEntry] if you need.
   final FutureOr<void> Function()? onNextTap;
 
+  /// Tooltip background color
+  final Color? backgroundColor;
+
+  /// Tooltip inner padding
+  final EdgeInsets? padding;
+
+  /// Skip button style
+  final ButtonStyle? skipButtonStyle;
+
+  /// Next button style
+  final ButtonStyle? nextButtonStyle;
+
+  /// Complete button style
+  final ButtonStyle? completeButtonStyle;
+
   const TooltipSettings({
-    this.tooltipText = 'Text',
+    this.tooltipText = 'Text in tooltip',
     this.skipText = 'Skip',
     this.nextText = 'Next',
     this.arrowPosition = AppCustomArrowPosition.center,
     this.tooltipDirection = AppCustomTooltipDirection.top,
     this.completeText,
-    this.onPrevTap,
+    this.onSkipTap,
     this.onCompleteTap,
     this.onNextTap,
+    this.backgroundColor,
+    this.padding,
+    this.skipButtonStyle,
+    this.nextButtonStyle,
+    this.completeButtonStyle,
   });
 }
 
@@ -40,24 +74,47 @@ class AppOnboardingEntry extends StatefulWidget {
     required this.index,
     this.tooltipOffset,
     this.maxWidth = 277,
-    this.borderRadius = 10,
+    this.holeBorderRadius = 10,
     this.enabled = true,
     this.tooltipSettings = const TooltipSettings(),
     this.customTooltipBuilder,
-    this.customBackgroundBuilder,
+    this.customOverlayBuilder,
     this.backgroundColor,
+    this.targetAnchor,
+    this.followerAnchor,
   });
 
   final Widget child;
+
+  /// Tootlip offset from center`s [child]
   final Offset? tooltipOffset;
+
+  /// Index for [AppOnboardingEntry]. Defines the display order
   final int index;
+
+  /// maxWidth for default or custom tooltip
   final double maxWidth;
-  final double borderRadius;
-  final TooltipSettings? tooltipSettings;
-  final CustomBuilder customTooltipBuilder;
-  final CustomBuilder customBackgroundBuilder;
+
+  /// Border radius for hole
+  final double holeBorderRadius;
+
+  /// Settings for default tooltip
+  final TooltipSettings tooltipSettings;
+
+  /// Builder to do custom tooltip
+  final IndexedWidgetBuilder? customTooltipBuilder;
+
+  /// Builder to do custom overlay
+  final IndexedWidgetBuilder? customOverlayBuilder;
+
+  /// Overlay`s background color
   final Color? backgroundColor;
+
+  /// If [enabled] = false, return only [child]
+  /// Useful if [child] is a list item
   final bool enabled;
+  final Alignment? targetAnchor;
+  final Alignment? followerAnchor;
 
   @override
   State<AppOnboardingEntry> createState() => _AppOnboardingEntryState();
@@ -78,12 +135,6 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
   }
 
   @override
-  void didUpdateWidget(covariant AppOnboardingEntry oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    print('a');
-  }
-
-  @override
   void dispose() {
     gk = null;
     link = null;
@@ -95,7 +146,7 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
     if (!widget.enabled) return widget.child;
 
     final index = widget.index;
-    final defaultTooltipSettings = widget.tooltipSettings;
+    final tooltipSettings = widget.tooltipSettings;
     final backgroundColor =
         widget.backgroundColor ?? Colors.black.withOpacity(0.6);
 
@@ -106,8 +157,6 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
           child: Stack(
             children: [
               Positioned.fill(
-                // ColoredBox нужен для заполнения всего пространства,
-                // чтобы тапы на ui под онбордингом не обрабатывались
                 child: ColoredBox(
                   color: Colors.black.withOpacity(0.001),
                   child: CompositedTransformFollower(
@@ -115,55 +164,40 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
                       child: CustomPaint(
                         painter: _HolePainter(
                           key: gk!,
-                          borderRadius: widget.borderRadius,
+                          borderRadius: widget.holeBorderRadius,
                           backgroundColor: backgroundColor,
                         ),
                       )),
                 ),
               ),
-              if (widget.customBackgroundBuilder != null)
+              if (widget.customOverlayBuilder != null)
                 Positioned.fill(
-                  child: widget.customBackgroundBuilder!(context, index),
+                  child: widget.customOverlayBuilder!(context, index),
                 ),
               CompositedTransformFollower(
                 link: link!,
-                targetAnchor: defaultTooltipSettings?.tooltipDirection ==
-                        AppCustomTooltipDirection.bottom
-                    ? Alignment.topCenter
-                    : Alignment.bottomCenter,
+                targetAnchor: widget.targetAnchor ??
+                    (tooltipSettings.tooltipDirection ==
+                            AppCustomTooltipDirection.bottom
+                        ? Alignment.topCenter
+                        : Alignment.bottomCenter),
                 showWhenUnlinked: false,
                 offset: widget.tooltipOffset ??
-                    (defaultTooltipSettings?.tooltipDirection ==
+                    (tooltipSettings.tooltipDirection ==
                             AppCustomTooltipDirection.top
                         ? const Offset(0, 20)
                         : const Offset(0, -20)),
-                followerAnchor: defaultTooltipSettings?.tooltipDirection ==
-                        AppCustomTooltipDirection.bottom
-                    ? Alignment.bottomCenter
-                    : Alignment.topCenter,
+                followerAnchor: widget.followerAnchor ??
+                    (tooltipSettings.tooltipDirection ==
+                            AppCustomTooltipDirection.bottom
+                        ? Alignment.bottomCenter
+                        : Alignment.topCenter),
                 child: ConstrainedBox(
                   constraints: BoxConstraints(maxWidth: widget.maxWidth),
                   child: widget.customTooltipBuilder == null
                       ? _DefaultAnimatedTooltip(
-                          arrowPosition:
-                              defaultTooltipSettings?.arrowPosition ??
-                                  AppCustomArrowPosition.center,
-                          tooltipDirection:
-                              defaultTooltipSettings?.tooltipDirection ??
-                                  AppCustomTooltipDirection.top,
-                          onPrevTap: defaultTooltipSettings?.onPrevTap,
-                          onCompleteTap: defaultTooltipSettings?.onCompleteTap,
-                          onNextTap: defaultTooltipSettings?.onNextTap,
-                          completeText: defaultTooltipSettings?.completeText,
-                          tooltipText:
-                              defaultTooltipSettings?.tooltipText ?? '',
-                          hide: _appOnboardingState.hide,
-                          show: _appOnboardingState.show,
-                          next: _appOnboardingState.next,
-                          index: widget.index,
-                          stepsLength: _appOnboardingState.stepsLength,
-                          nextText: defaultTooltipSettings?.nextText ?? '',
-                          skipText: defaultTooltipSettings?.skipText ?? '',
+                          settings: widget.tooltipSettings,
+                          appOnboardingState: _appOnboardingState,
                         )
                       : widget.customTooltipBuilder!(context, index),
                 ),
@@ -183,36 +217,12 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
 
 class _DefaultAnimatedTooltip extends StatefulWidget {
   const _DefaultAnimatedTooltip({
-    required this.arrowPosition,
-    required this.tooltipDirection,
-    required this.onPrevTap,
-    required this.onCompleteTap,
-    required this.onNextTap,
-    required this.completeText,
-    required this.tooltipText,
-    required this.hide,
-    required this.show,
-    required this.next,
-    required this.index,
-    required this.stepsLength,
-    required this.nextText,
-    required this.skipText,
+    required this.settings,
+    required this.appOnboardingState,
   });
 
-  final AppCustomArrowPosition arrowPosition;
-  final AppCustomTooltipDirection tooltipDirection;
-  final FutureOr<void> Function()? onPrevTap;
-  final FutureOr<void> Function()? onCompleteTap;
-  final FutureOr<void> Function()? onNextTap;
-  final void Function({bool isDone}) hide;
-  final VoidCallback show;
-  final VoidCallback next;
-  final String? completeText;
-  final String tooltipText;
-  final String nextText;
-  final String skipText;
-  final int index;
-  final int stepsLength;
+  final TooltipSettings settings;
+  final AppOnboardingState appOnboardingState;
 
   @override
   State<_DefaultAnimatedTooltip> createState() =>
@@ -222,6 +232,7 @@ class _DefaultAnimatedTooltip extends StatefulWidget {
 class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
     with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
+  late final TooltipSettings settings;
 
   @override
   void initState() {
@@ -231,6 +242,7 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
       duration: const Duration(milliseconds: 300),
       lowerBound: 0.5,
     )..forward();
+    settings = widget.settings;
   }
 
   @override
@@ -242,6 +254,14 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final backgroundColor = settings.backgroundColor ?? theme.primaryColor;
+    final padding = settings.padding ??
+        const EdgeInsets.only(
+          top: 8,
+          bottom: 12,
+          left: 12,
+          right: 12,
+        );
     return FadeTransition(
       opacity: CurvedAnimation(
         parent: animationController,
@@ -253,16 +273,11 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
           curve: Curves.easeIn,
         ),
         child: AppCustomTooltip(
-          direction: widget.tooltipDirection,
-          backgroundColor: theme.primaryColor,
-          arrowPosition: widget.arrowPosition,
+          direction: settings.tooltipDirection,
+          backgroundColor: backgroundColor,
+          arrowPosition: settings.arrowPosition,
           child: Padding(
-            padding: const EdgeInsets.only(
-              top: 8,
-              bottom: 12,
-              left: 12,
-              right: 12,
-            ),
+            padding: padding,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -270,7 +285,7 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                   children: [
                     Expanded(
                       child: Text(
-                        widget.tooltipText,
+                        settings.tooltipText,
                         textAlign: TextAlign.start,
                         maxLines: 50,
                       ),
@@ -278,19 +293,20 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                   ],
                 ),
                 const SizedBox(height: 8),
-                if (widget.completeText != null)
+                if (settings.completeText != null)
                   Row(
                     children: [
                       Expanded(
                         child: Material(
                           type: MaterialType.transparency,
                           child: ElevatedButton(
+                            style: settings.completeButtonStyle,
                             onPressed: () {
-                              widget.onCompleteTap?.call();
-                              widget.hide(isDone: true);
+                              settings.onCompleteTap?.call();
+                              widget.appOnboardingState.hide(isDone: true);
                             },
                             child: Text(
-                              widget.completeText!,
+                              settings.completeText!,
                             ),
                           ),
                         ),
@@ -302,16 +318,17 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                     children: [
                       Expanded(
                         child: ElevatedButton(
+                          style: settings.skipButtonStyle,
                           onPressed: () {
-                            widget.onPrevTap?.call();
-                            widget.hide(
+                            settings.onSkipTap?.call();
+                            widget.appOnboardingState.hide(
                               isDone: true,
                             );
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(widget.skipText),
+                              Text(settings.skipText),
                             ],
                           ),
                         ),
@@ -319,17 +336,22 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                       const SizedBox(width: 4),
                       Expanded(
                         child: ElevatedButton(
+                          style: settings.nextButtonStyle,
                           onPressed: () async {
-                            widget.hide();
-                            await widget.onNextTap?.call();
-                            widget.next();
-                            widget.show();
+                            widget.appOnboardingState.hide();
+                            await settings.onNextTap?.call();
+                            widget.appOnboardingState.next();
+                            widget.appOnboardingState.show();
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Text(
-                                  '${widget.nextText} (${widget.index + 1} / ${widget.stepsLength})'),
+                                '${settings.nextText} '
+                                '(${widget.appOnboardingState.currentIndex + 1}'
+                                ' / '
+                                '${widget.appOnboardingState.stepsLength})',
+                              ),
                             ],
                           ),
                         ),

@@ -59,6 +59,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final buttonStyle = Theme.of(context).elevatedButtonTheme.style ?? const ButtonStyle();
     return AppOnboarding(
       controller: controller,
       onDone: () => showDialog(
@@ -134,6 +135,20 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
               AppOnboardingEntry(
                 index: 1,
+                tooltipSettings: TooltipSettings(
+                  tooltipText: 'Custom text',
+                  backgroundColor: Colors.red.shade300,
+                  skipButtonStyle: buttonStyle.copyWith(
+                    backgroundColor: MaterialStatePropertyAll<Color>(
+                      Colors.blue.shade500,
+                    ),
+                  ),
+                  nextButtonStyle: buttonStyle.copyWith(
+                    backgroundColor: MaterialStatePropertyAll<Color>(
+                      Colors.pink.shade400,
+                    ),
+                  ),
+                ),
                 child: Text(
                   '$_counter',
                   style: Theme.of(context).textTheme.headlineMedium,
@@ -151,7 +166,7 @@ class _MyHomePageState extends State<MyHomePage> {
             completeText: 'Complete!',
           ),
           backgroundColor: Colors.blue.withOpacity(0.4),
-          customBackgroundBuilder: (context, index) {
+          customOverlayBuilder: (context, index) {
             return Center(
               child: ColoredBox(
                 color: Colors.red.shade300,
