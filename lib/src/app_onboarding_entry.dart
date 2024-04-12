@@ -1,11 +1,8 @@
-import 'dart:async';
-
 import 'package:app_onboarding/src/app_onboarding.dart';
 import 'package:app_onboarding/src/tooltip/app_custom_tooltip.dart';
 import 'package:flutter/material.dart';
 
 class TooltipSettings {
-
   /// Complete button`s text
   final String? completeText;
 
@@ -25,14 +22,14 @@ class TooltipSettings {
   final AppCustomTooltipDirection tooltipDirection;
 
   /// Callback for skip button. Call before hide [AppOnboardingEntry]
-  final FutureOr<void> Function()? onSkipTap;
+  final FutureVoidCallback? onSkipTap;
 
   /// Callback for complete button. Call before hide [AppOnboardingEntry]
-  final FutureOr<void> Function()? onCompleteTap;
+  final FutureVoidCallback? onCompleteTap;
 
   /// Callback for next button. Call after hide [AppOnboardingEntry] but before next [AppOnboardingEntry].
   /// You may scroll to next [AppOnboardingEntry] if you need.
-  final FutureOr<void> Function()? onNextTap;
+  final FutureVoidCallback? onNextTap;
 
   /// Tooltip background color
   final Color? backgroundColor;
@@ -82,6 +79,8 @@ class AppOnboardingEntry extends StatefulWidget {
     this.backgroundColor,
     this.targetAnchor,
     this.followerAnchor,
+    this.onShow,
+    this.onHide,
   });
 
   final Widget child;
@@ -106,6 +105,8 @@ class AppOnboardingEntry extends StatefulWidget {
 
   /// Builder to do custom overlay
   final IndexedWidgetBuilder? customOverlayBuilder;
+  final FutureVoidCallback? onShow;
+  final FutureVoidCallback? onHide;
 
   /// Overlay`s background color
   final Color? backgroundColor;
@@ -129,6 +130,14 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
   void didChangeDependencies() {
     _appOnboardingState = AppOnboarding.of(context);
     _appOnboardingState.add(widget.index);
+    _appOnboardingState.registerOnEntryShow(
+      widget.index,
+      widget.onShow,
+    );
+    _appOnboardingState.registerOnEntryHide(
+      widget.index,
+      widget.onHide,
+    );
     link = LayerLink();
     gk = GlobalKey();
     super.didChangeDependencies();

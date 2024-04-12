@@ -1,13 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
+
+typedef FutureVoidCallback = FutureOr<void> Function();
 
 class AppOnboardingController {
   AppOnboardingController();
 
   int currentIndex = 0;
   final Map<int, OverlayPortalController> _overlayControllers = {};
+  final Map<int, FutureVoidCallback?> _onEntryShows = {};
+  final Map<int, FutureVoidCallback?> _onEntryHide = {};
+  FutureVoidCallback? _onStart;
 
-  void start({int startIndex = 0}) {
+  Future<void> start({int startIndex = 0}) async {
     currentIndex = startIndex;
+    await _onStart?.call();
     show();
   }
 
@@ -23,11 +31,13 @@ class AppOnboardingController {
     }
   }
 
-  void show() {
+  Future<void> show() async {
+    await _onEntryShows[currentIndex]?.call();
     _overlayControllers[currentIndex]?.show();
   }
 
-  void hide() {
+  Future<void> hide() async {
+    await _onEntryHide[currentIndex]?.call();
     _overlayControllers[currentIndex]?.hide();
   }
 
@@ -43,9 +53,17 @@ class AppOnboardingController {
     show();
   }
 
-  void add(int index) {
+  void addEntry(int index) {
     _overlayControllers[index] =
         OverlayPortalController(debugLabel: 'AppOnboardingController  $index');
+  }
+
+  void _registerOnEntryShows(int index, FutureVoidCallback? callback) {
+    _onEntryShows[index] = callback;
+  }
+
+  void _registerOnEntryHide(int index, FutureVoidCallback? callback) {
+    _onEntryHide[index] = callback;
   }
 
   OverlayPortalController get(int index) {
@@ -67,11 +85,13 @@ class AppOnboarding extends StatefulWidget {
     required this.child,
     required this.controller,
     this.onDone,
+    this.onStart,
   });
 
   final AppOnboardingController controller;
   final Widget child;
-  final VoidCallback? onDone;
+  final FutureVoidCallback? onDone;
+  final FutureVoidCallback? onStart;
 
   static AppOnboardingState of(BuildContext context) {
     final state = context.findAncestorStateOfType<AppOnboardingState>();
@@ -124,7 +144,7 @@ class AppOnboardingState extends State<AppOnboarding> {
   }
 
   void add(int index) {
-    widget.controller.add(index);
+    widget.controller.addEntry(index);
   }
 
   void start({int startIndex = 0}) {
@@ -137,6 +157,20 @@ class AppOnboardingState extends State<AppOnboarding> {
 
   void showPrev() {
     widget.controller.showPrev();
+  }
+
+  void registerOnEntryShow(int index, FutureVoidCallback? callback) {
+    widget.controller._registerOnEntryShows(index, callback);
+  }
+
+  void registerOnEntryHide(int index, FutureVoidCallback? callback) {
+    widget.controller._registerOnEntryHide(index, callback);
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    widget.controller._onStart = widget.onStart;
   }
 
   @override
