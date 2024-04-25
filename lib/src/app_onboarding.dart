@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
 
@@ -12,6 +13,10 @@ class AppOnboardingController {
   final Map<int, FutureVoidCallback?> _onEntryShows = {};
   final Map<int, FutureVoidCallback?> _onEntryHide = {};
   FutureVoidCallback? _onStart;
+
+  FutureVoidCallback? onDone;
+  int? firstAutoHiddenIndex;
+  int countAutoHidden = 0;
 
   Future<void> start({int startIndex = 0}) async {
     currentIndex = startIndex;
@@ -36,7 +41,15 @@ class AppOnboardingController {
     _overlayControllers[currentIndex]?.show();
   }
 
-  Future<void> hide() async {
+  Future<void> showAutoHidden() async {
+    await hide();
+    await onDone?.call();
+    if (firstAutoHiddenIndex == null) return;
+    currentIndex = firstAutoHiddenIndex!;
+    await show();
+  }
+
+  Future<void> hide({bool isDone = false}) async {
     await _onEntryHide[currentIndex]?.call();
     _overlayControllers[currentIndex]?.hide();
   }
@@ -120,12 +133,20 @@ class AppOnboardingState extends State<AppOnboarding> {
 
   int get currentIndex => widget.controller.currentIndex;
 
+  int get countAutoHidden => widget.controller.countAutoHidden;
+
+  int? get firstAutoHiddenIndex => widget.controller.firstAutoHiddenIndex;
+
   OverlayPortalController getOverlayController(int index) {
     return widget.controller.get(index);
   }
 
   void show() {
     widget.controller.show();
+  }
+
+  void showAutoHidden() {
+    widget.controller.showAutoHidden();
   }
 
   void hide({bool isDone = false}) {
@@ -145,6 +166,14 @@ class AppOnboardingState extends State<AppOnboarding> {
 
   void add(int index) {
     widget.controller.addEntry(index);
+  }
+
+  void addAutoHidden(int index) {
+    widget.controller.addEntry(index);
+    widget.controller.firstAutoHiddenIndex ??= index;
+    widget.controller.firstAutoHiddenIndex =
+        min(widget.controller.firstAutoHiddenIndex!, index);
+    widget.controller.countAutoHidden++;
   }
 
   void start({int startIndex = 0}) {
