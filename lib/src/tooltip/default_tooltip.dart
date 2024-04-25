@@ -42,24 +42,14 @@ class _DefaultAnimatedAutoTooltipState
         TweenSequenceItem(tween: ConstantTween(1), weight: 92),
         TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 4),
       ],
-    ).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: Curves.linear,
-      ),
-    );
+    ).animate(animationController);
     scaleTransition = TweenSequence<double>(
       [
         TweenSequenceItem(tween: Tween<double>(begin: 0.2, end: 1), weight: 4),
         TweenSequenceItem(tween: ConstantTween(1), weight: 92),
         TweenSequenceItem(tween: Tween<double>(begin: 1, end: 0.2), weight: 4),
       ],
-    ).animate(
-      CurvedAnimation(
-        parent: animationController,
-        curve: Curves.linear,
-      ),
-    );
+    ).animate(animationController);
     timer?.cancel();
     timer = Timer(
       duration,
@@ -87,12 +77,12 @@ class _DefaultAnimatedAutoTooltipState
         );
     return FadeTransition(
       opacity: CurvedAnimation(
-        parent: animationController,
+        parent: fadeTransition,
         curve: Curves.easeIn,
       ),
       child: ScaleTransition(
         scale: CurvedAnimation(
-          parent: animationController,
+          parent: scaleTransition,
           curve: Curves.easeIn,
         ),
         child: AppCustomTooltip(
