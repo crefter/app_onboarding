@@ -211,9 +211,11 @@ class _MyHomePageState extends State<MyHomePage> {
           child: AppOnboardingEntry(
             index: 4,
             isAutoHidden: true,
+            tooltipOffset: const Offset(-113, -20),
             tooltipSettings: const TooltipSettings(
               tooltipText: 'THIS IS AUTO TOOLTIP!',
               tooltipDirection: AppCustomTooltipDirection.bottom,
+              arrowPosition: AppCustomArrowPosition.right,
             ),
             child: FloatingActionButton(
               onPressed: _incrementCounter,

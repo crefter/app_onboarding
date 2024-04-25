@@ -126,6 +126,11 @@ class AppOnboardingEntry extends StatefulWidget {
   final bool enabled;
   final Alignment? targetAnchor;
   final Alignment? followerAnchor;
+
+  /// If [isAutoHidden] = true, tooltip will hide automatically after [hideAfterDuration].
+  /// Auto hidden tooltip MUST BE after all other [AppOnboardingEntry] by index.
+  /// Use [customTooltipBuilder] to build custom tooltip.
+  /// Use [customOverlayBuilder] to build custom overlay.
   final bool isAutoHidden;
   final Duration? hideAfterDuration;
 
