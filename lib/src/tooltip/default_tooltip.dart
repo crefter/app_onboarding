@@ -22,6 +22,8 @@ class _DefaultAnimatedAutoTooltipState
     with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
   late final TooltipSettings settings;
+  late final Animation<double> fadeTransition;
+  late final Animation<double> scaleTransition;
   Timer? timer;
 
   @override
@@ -33,8 +35,31 @@ class _DefaultAnimatedAutoTooltipState
     animationController = AnimationController(
       vsync: this,
       duration: duration,
-      lowerBound: 0.5,
     )..forward();
+    fadeTransition = TweenSequence<double>(
+      [
+        TweenSequenceItem(tween: Tween(begin: 0.2, end: 1), weight: 4),
+        TweenSequenceItem(tween: ConstantTween(1), weight: 92),
+        TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 4),
+      ],
+    ).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.linear,
+      ),
+    );
+    scaleTransition = TweenSequence<double>(
+      [
+        TweenSequenceItem(tween: Tween<double>(begin: 0.2, end: 1), weight: 4),
+        TweenSequenceItem(tween: ConstantTween(1), weight: 92),
+        TweenSequenceItem(tween: Tween<double>(begin: 1, end: 0.2), weight: 4),
+      ],
+    ).animate(
+      CurvedAnimation(
+        parent: animationController,
+        curve: Curves.linear,
+      ),
+    );
     timer?.cancel();
     timer = Timer(
       duration,

@@ -213,6 +213,7 @@ class _MyHomePageState extends State<MyHomePage> {
             isAutoHidden: true,
             tooltipSettings: const TooltipSettings(
               tooltipText: 'THIS IS AUTO TOOLTIP!',
+              tooltipDirection: AppCustomTooltipDirection.bottom,
             ),
             child: FloatingActionButton(
               onPressed: _incrementCounter,
