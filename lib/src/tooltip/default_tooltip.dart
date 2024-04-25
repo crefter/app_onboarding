@@ -22,7 +22,7 @@ class _DefaultAnimatedAutoTooltipState
     with SingleTickerProviderStateMixin {
   late final AnimationController animationController;
   late final TooltipSettings settings;
-  late final Timer? timer;
+  Timer? timer;
 
   @override
   void initState() {

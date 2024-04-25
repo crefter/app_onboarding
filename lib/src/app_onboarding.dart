@@ -54,16 +54,16 @@ class AppOnboardingController {
     _overlayControllers[currentIndex]?.hide();
   }
 
-  void showNext() {
-    hide();
+  Future<void> showNext() async {
+    await hide();
     next();
-    show();
+    await show();
   }
 
-  void showPrev() {
-    hide();
+  Future<void> showPrev() async {
+    await hide();
     prev();
-    show();
+    await show();
   }
 
   void addEntry(int index) {

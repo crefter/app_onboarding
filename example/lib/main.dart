@@ -59,7 +59,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext context) {
-    final buttonStyle = Theme.of(context).elevatedButtonTheme.style ?? const ButtonStyle();
+    final buttonStyle =
+        Theme.of(context).elevatedButtonTheme.style ?? const ButtonStyle();
     return AppOnboarding(
       controller: controller,
       onDone: () => showDialog(
@@ -207,10 +208,17 @@ class _MyHomePageState extends State<MyHomePage> {
               ),
             );
           },
-          child: FloatingActionButton(
-            onPressed: _incrementCounter,
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
+          child: AppOnboardingEntry(
+            index: 4,
+            isAutoHidden: true,
+            tooltipSettings: const TooltipSettings(
+              tooltipText: 'THIS IS AUTO TOOLTIP!',
+            ),
+            child: FloatingActionButton(
+              onPressed: _incrementCounter,
+              tooltip: 'Increment',
+              child: const Icon(Icons.add),
+            ),
           ),
         ), // This trailing comma makes auto-formatting nicer for build methods.
       ),
