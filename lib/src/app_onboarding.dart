@@ -13,19 +13,23 @@ class AppOnboardingController {
   final Map<int, FutureVoidCallback?> _onEntryShows = {};
   final Map<int, FutureVoidCallback?> _onEntryHide = {};
   FutureVoidCallback? _onStart;
-
-  FutureVoidCallback? onDone;
+  FutureVoidCallback? _onDone;
+  FutureVoidCallback? _onAutoHiddenStart;
+  FutureVoidCallback? _onAutoHiddenDone;
   int? firstAutoHiddenIndex;
   int countAutoHidden = 0;
 
   Future<void> start({int startIndex = 0}) async {
     currentIndex = startIndex;
+    for (var controller in _overlayControllers.values) {
+      controller.hide();
+    }
     await _onStart?.call();
     show();
   }
 
   void next() {
-    if (currentIndex < _overlayControllers.length - 1) {
+    if (currentIndex < _overlayControllers.length) {
       currentIndex++;
     }
   }
@@ -41,10 +45,10 @@ class AppOnboardingController {
     _overlayControllers[currentIndex]?.show();
   }
 
-  Future<void> showAutoHidden() async {
+  Future<void> startAutoHidden() async {
     await hide();
-    await onDone?.call();
     if (firstAutoHiddenIndex == null) return;
+    await _onAutoHiddenStart?.call();
     currentIndex = firstAutoHiddenIndex!;
     await show();
   }
@@ -52,12 +56,33 @@ class AppOnboardingController {
   Future<void> hide({bool isDone = false}) async {
     await _onEntryHide[currentIndex]?.call();
     _overlayControllers[currentIndex]?.hide();
+    if (isDone || currentIndex == ((firstAutoHiddenIndex ?? 0) - 1)) {
+      await _onDone?.call();
+    }
+    if (currentIndex == _overlayControllers.length - 1) {
+      await _onAutoHiddenDone?.call();
+    }
+  }
+
+  Future<void> cancel({
+    bool isDone = false,
+    bool isAutoHiddenDone = false,
+  }) async {
+    if (isDone) {
+      _onDone?.call();
+    }
+    if (isAutoHiddenDone) {
+      _onAutoHiddenDone?.call();
+    }
+    for (final controller in _overlayControllers.values) {
+      controller.hide();
+    }
   }
 
   Future<void> showNext() async {
     await hide();
     next();
-    await show();
+    if (currentIndex < _overlayControllers.length) await show();
   }
 
   Future<void> showPrev() async {
@@ -99,12 +124,16 @@ class AppOnboarding extends StatefulWidget {
     required this.controller,
     this.onDone,
     this.onStart,
+    this.onAutoHiddenStart,
+    this.onAutoHiddenDone,
   });
 
   final AppOnboardingController controller;
   final Widget child;
   final FutureVoidCallback? onDone;
   final FutureVoidCallback? onStart;
+  final FutureVoidCallback? onAutoHiddenStart;
+  final FutureVoidCallback? onAutoHiddenDone;
 
   static AppOnboardingState of(BuildContext context) {
     final state = context.findAncestorStateOfType<AppOnboardingState>();
@@ -145,15 +174,12 @@ class AppOnboardingState extends State<AppOnboarding> {
     widget.controller.show();
   }
 
-  void showAutoHidden() {
-    widget.controller.showAutoHidden();
+  void startAutoHidden() {
+    widget.controller.startAutoHidden();
   }
 
   void hide({bool isDone = false}) {
     widget.controller.hide();
-    if (isDone || currentIndex == stepsLength - 1) {
-      widget.onDone?.call();
-    }
   }
 
   void next() {
@@ -188,6 +214,16 @@ class AppOnboardingState extends State<AppOnboarding> {
     widget.controller.showPrev();
   }
 
+  void cancel({
+    bool isDone = false,
+    bool isAutoHiddenDone = false,
+  }) {
+    widget.controller.cancel(
+      isDone: isDone,
+      isAutoHiddenDone: isAutoHiddenDone,
+    );
+  }
+
   void registerOnEntryShow(int index, FutureVoidCallback? callback) {
     widget.controller._registerOnEntryShows(index, callback);
   }
@@ -199,7 +235,11 @@ class AppOnboardingState extends State<AppOnboarding> {
   @override
   void initState() {
     super.initState();
-    widget.controller._onStart = widget.onStart;
+    widget.controller
+      .._onStart = widget.onStart
+      .._onDone = widget.onDone
+      .._onAutoHiddenDone = widget.onAutoHiddenDone
+      .._onAutoHiddenStart = widget.onAutoHiddenStart;
   }
 
   @override

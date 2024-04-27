@@ -61,6 +61,7 @@ class _DefaultAnimatedAutoTooltipState
   @override
   void dispose() {
     animationController.dispose();
+    timer?.cancel();
     super.dispose();
   }
 
@@ -202,7 +203,7 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                             style: settings.completeButtonStyle,
                             onPressed: () {
                               settings.onCompleteTap?.call();
-                              widget.appOnboardingState.showAutoHidden();
+                              widget.appOnboardingState.startAutoHidden();
                             },
                             child: Text(
                               settings.completeText!,
@@ -220,7 +221,7 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                           style: settings.skipButtonStyle,
                           onPressed: () {
                             settings.onSkipTap?.call();
-                            widget.appOnboardingState.showAutoHidden();
+                            widget.appOnboardingState.startAutoHidden();
                           },
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,

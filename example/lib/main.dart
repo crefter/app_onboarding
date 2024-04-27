@@ -72,6 +72,33 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ),
       ),
+      onStart: () => showDialog(
+        context: context,
+        builder: (BuildContext context) => const AlertDialog(
+          title: Text(
+            'Onboarding started!\n(onStart)',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+      onAutoHiddenDone: () => showDialog(
+        context: context,
+        builder: (BuildContext context) => const AlertDialog(
+          title: Text(
+            'Auto Onboarding done!\n(onAutoHiddenDone)',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+      onAutoHiddenStart: () => showDialog(
+        context: context,
+        builder: (BuildContext context) => const AlertDialog(
+          title: Text(
+            'Auto Onboarding started!\n(onAutoHiddenStart)',
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
       child: Scaffold(
         appBar: AppBar(
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
@@ -153,6 +180,27 @@ class _MyHomePageState extends State<MyHomePage> {
                 child: Text(
                   '$_counter',
                   style: Theme.of(context).textTheme.headlineMedium,
+                ),
+              ),
+              const SizedBox(height: 20),
+              ElevatedButton(
+                onPressed: () {
+                  controller.start();
+                },
+                child: const Text('Start Onboarding'),
+              ),
+              const SizedBox(height: 20),
+              AppOnboardingEntry(
+                index: 5,
+                isAutoHidden: true,
+                tooltipSettings: const TooltipSettings(
+                  tooltipText: 'SECOND AUTO TOOLTIP!',
+                ),
+                child: ElevatedButton(
+                  onPressed: () {
+                    controller.startAutoHidden();
+                  },
+                  child: const Text('Start Auto onboarding'),
                 ),
               ),
             ],
