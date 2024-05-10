@@ -14,7 +14,11 @@ class TooltipSettings {
   final String skipText;
 
   /// Next button`s text
-  final String nextText;
+  final String Function(
+    int currentIndex,
+    int stepsLength,
+    int countAutoHidden,
+  )? nextText;
 
   /// Text inside tooltip
   final String tooltipText;
@@ -49,14 +53,12 @@ class TooltipSettings {
 
   /// Complete button style
   final ButtonStyle? completeButtonStyle;
-  final bool isAutoHidden;
   final Duration? hideAfterDuration;
 
   const TooltipSettings({
     this.tooltipText = 'Text in tooltip',
     this.skipText = 'Skip',
-    this.nextText = 'Next',
-    this.isAutoHidden = false,
+    this.nextText,
     this.arrowPosition = AppOnboardingTooltipArrowPosition.center,
     this.tooltipDirection = AppOnboardingTooltipDirection.top,
     this.completeText,
@@ -194,7 +196,10 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
     } else {
       child = widget.customTooltipBuilder?.call(context, index) ??
           _DefaultAnimatedTooltip(
-              settings: settings, appOnboardingState: _appOnboardingState);
+            settings: settings,
+            appOnboardingState: _appOnboardingState,
+            index: widget.index,
+          );
     }
 
     return OverlayPortal(
