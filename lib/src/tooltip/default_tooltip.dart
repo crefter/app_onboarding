@@ -205,9 +205,7 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                               settings.onCompleteTap?.call();
                               widget.appOnboardingState.startAutoHidden();
                             },
-                            child: Text(
-                              settings.completeText!,
-                            ),
+                            child: Text(settings.completeText!),
                           ),
                         ),
                       ),
@@ -244,12 +242,7 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              Text(
-                                '${settings.nextText} '
-                                '(${widget.appOnboardingState.currentIndex + 1}'
-                                ' / '
-                                '${widget.appOnboardingState.stepsLength - widget.appOnboardingState.countAutoHidden})',
-                              ),
+                              Text(settings.nextText),
                             ],
                           ),
                         ),
