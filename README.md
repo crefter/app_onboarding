@@ -1,7 +1,7 @@
 A Flutter package for building simple onboarding with tooltips!
 
-![Example screenshot](/assets/top_screenshot.png)
-![Example how the package works](/assets/first_screen_record.webm)
+<img alt="Example screenshot" height="1280" src="/assets/top_screenshot.png" width="720"/>
+![Example how the package works](/assets/first_screen_record.gif)
 
 ## Features
 
@@ -62,10 +62,4 @@ Fourth, start onboarding:
 
 That`s all, you created basic onboarding with tooltips!
 
-For more info 
-
-## Additional information
-
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+For more info see <a href="https://github.com/crefter/app_onboarding/blob/master/example/lib/main.dart">example</a>
