@@ -104,6 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: AppOnboardingEntry(
             index: 0,
+            tooltipSettings: TooltipSettings(backgroundColor: Colors.red.shade400),
             child: Text(widget.title),
           ),
         ),

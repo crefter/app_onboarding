@@ -1,36 +1,68 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+A Flutter package for building simple onboarding with tooltips!
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/guides/libraries/writing-package-pages).
-
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-library-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/developing-packages).
--->
-
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+![Example screenshot](/assets/top_screenshot.png)
+![Example how the package works](/assets/first_screen_record.webm)
 
 ## Features
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+Use this package in your Flutter app to:
+- Build manual onboarding with tooltips
+- Build auto onboarding with tooltips
 
 ## Getting started
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+Add this to your package's pubspec.yaml file:
+```
+dependencies:
+  app_onboarding: ^1.0.0
+```
 
 ## Usage
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
-
+First, create AppOnboardingController (Dont forget dispose in dispose method):
 ```dart
-const like = 'sample';
+  late final AppOnboardingController controller = AppOnboardingController();
+
+    @override
+    void dispose() {
+      controller.dispose();
+      super.dispose();
+    }
 ```
+
+Second, wrap you top-screen widget by AppOnboarding and set controller:
+```dart
+    AppOnboarding (
+        controller: controller,
+        child: Scaffold(
+          body:...
+    );
+```
+
+Third, wrap your widgets (buttons, text and all you want) by AppOnboardingEntry:
+```dart
+    AppOnboardingEntry(
+        index: 0,
+        tooltipSettings: TooltipSettings(backgroundColor: Colors.red.shade400),
+        child: Text(widget.title),
+    ),
+```
+
+Fourth, start onboarding:
+```dart
+    @override
+    void initState() {
+      super.initState();
+      Future.delayed(
+        const Duration(seconds: 2),
+        controller.start,
+      );
+    }
+```
+
+That`s all, you created basic onboarding with tooltips!
+
+For more info 
 
 ## Additional information
 
