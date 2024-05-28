@@ -317,7 +317,13 @@ class _HolePainter extends CustomPainter {
   void paint(Canvas canvas, Size size) {
     const padding = 6.0;
     final paintBack = Paint()..color = backgroundColor;
-    final path = Path()..addRect(Rect.largest);
+    final path = Path()
+      ..addRect(
+        Rect.fromPoints(
+          Offset(-size.width, -size.height),
+          Offset(size.width, size.height),
+        ),
+      );
     final rect = key.globalPaintBounds!;
     final a = rect.inflate(padding);
     final path2 = Path()
@@ -332,7 +338,10 @@ class _HolePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
+  bool shouldRepaint(_HolePainter oldDelegate) =>
+      backgroundColor != oldDelegate.backgroundColor ||
+      borderRadius != oldDelegate.borderRadius ||
+      key != oldDelegate.key;
 }
 
 extension GlobalKeyEx on GlobalKey {

@@ -168,14 +168,14 @@ class _MyHomePageState extends State<MyHomePage> {
                   backgroundColor: Colors.red.shade300,
                   skipButtonSettings: ButtonSettings(
                     buttonStyle: buttonStyle.copyWith(
-                      backgroundColor: MaterialStatePropertyAll<Color>(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
                         Colors.blue.shade500,
                       ),
                     ),
                   ),
                   nextButtonSettings: ButtonSettings(
                     buttonStyle: buttonStyle.copyWith(
-                      backgroundColor: MaterialStatePropertyAll<Color>(
+                      backgroundColor: WidgetStatePropertyAll<Color>(
                         Colors.pink.shade400,
                       ),
                     ),
