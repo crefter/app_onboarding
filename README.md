@@ -19,7 +19,7 @@ dependencies:
 
 ## Usage
 
-First, create AppOnboardingController (Dont forget dispose in dispose method):
+First, create AppOnboardingController (Don`t forget dispose in dispose method):
 ```dart
   late final AppOnboardingController controller = AppOnboardingController();
 
