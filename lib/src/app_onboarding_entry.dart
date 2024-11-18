@@ -22,6 +22,23 @@ class ButtonSettings {
   });
 }
 
+class TooltipTextSettings {
+  /// Text inside tooltip
+  final String text;
+
+  /// Text style for tooltip text
+  final TextStyle? textStyle;
+
+  /// Text align for tooltip text
+  final TextAlign textAlign;
+
+  const TooltipTextSettings({
+    required this.text,
+    this.textAlign = TextAlign.start,
+    this.textStyle,
+  });
+}
+
 class TooltipSettings {
   /// Complete button`s text
   final String? completeText;
@@ -29,15 +46,14 @@ class TooltipSettings {
   /// Skip button`s text
   final String skipText;
 
+  final TooltipTextSettings tooltipTextSettings;
+
   /// Next button`s text
   final String Function(
     int currentIndex,
     int stepsLength,
     int countAutoHidden,
   )? nextText;
-
-  /// Text inside tooltip
-  final String tooltipText;
 
   /// Tooltip arrow`s position
   final AppOnboardingTooltipArrowPosition arrowPosition;
@@ -75,7 +91,9 @@ class TooltipSettings {
   final Duration? hideAfterDuration;
 
   const TooltipSettings({
-    this.tooltipText = 'Text in tooltip',
+    this.tooltipTextSettings = const TooltipTextSettings(
+      text: 'Text in tooltip',
+    ),
     this.skipText = 'Skip',
     this.nextText,
     this.arrowPosition = AppOnboardingTooltipArrowPosition.center,
@@ -102,6 +120,7 @@ class AppOnboardingEntry extends StatefulWidget {
     this.tooltipOffset,
     this.maxWidth = 277,
     this.holeBorderRadius = 10,
+    this.holeInnerPadding = 6.0,
     this.enabled = true,
     this.tooltipSettings = const TooltipSettings(),
     this.customTooltipBuilder,
@@ -128,6 +147,9 @@ class AppOnboardingEntry extends StatefulWidget {
 
   /// Border radius for hole
   final double holeBorderRadius;
+
+  /// Inner padding for hole
+  final double holeInnerPadding;
 
   /// Settings for default tooltip
   final TooltipSettings tooltipSettings;
@@ -206,15 +228,17 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
     final settings = widget.tooltipSettings;
 
     late Widget child;
-    if (widget.isAutoHidden) {
-      child = widget.customTooltipBuilder?.call(context, index) ??
+    final customTooltipBuilder = widget.customTooltipBuilder;
+
+    if (isAutoHidden) {
+      child = customTooltipBuilder?.call(context, index) ??
           _DefaultAnimatedAutoTooltip(
             settings: settings,
             appOnboardingState: _appOnboardingState,
             hideAfterDuration: widget.hideAfterDuration,
           );
     } else {
-      child = widget.customTooltipBuilder?.call(context, index) ??
+      child = customTooltipBuilder?.call(context, index) ??
           _DefaultAnimatedTooltip(
             settings: settings,
             appOnboardingState: _appOnboardingState,
@@ -239,6 +263,7 @@ class _AppOnboardingEntryState extends State<AppOnboardingEntry> {
                             key: gk!,
                             borderRadius: widget.holeBorderRadius,
                             backgroundColor: backgroundColor,
+                            padding: widget.holeInnerPadding,
                           ),
                         )),
                   ),

@@ -104,7 +104,8 @@ class _MyHomePageState extends State<MyHomePage> {
           backgroundColor: Theme.of(context).colorScheme.inversePrimary,
           title: AppOnboardingEntry(
             index: 0,
-            tooltipSettings: TooltipSettings(backgroundColor: Colors.red.shade400),
+            tooltipSettings:
+                TooltipSettings(backgroundColor: Colors.red.shade400),
             child: Text(widget.title),
           ),
         ),
@@ -165,13 +166,21 @@ class _MyHomePageState extends State<MyHomePage> {
               AppOnboardingEntry(
                 index: 1,
                 tooltipSettings: TooltipSettings(
-                  tooltipText: 'Custom text',
+                  tooltipTextSettings: TooltipTextSettings(
+                    text: 'Custom text',
+                    textStyle: Theme.of(context)
+                        .textTheme
+                        .titleLarge
+                        ?.copyWith(color: Colors.yellow),
+                    textAlign: TextAlign.center,
+                  ),
                   backgroundColor: Colors.red.shade300,
                   skipButtonSettings: ButtonSettings(
                     buttonStyle: buttonStyle.copyWith(
                       backgroundColor: WidgetStatePropertyAll<Color>(
                         Colors.blue.shade500,
                       ),
+                      foregroundColor: WidgetStatePropertyAll(Colors.white),
                     ),
                   ),
                   nextButtonSettings: ButtonSettings(
@@ -198,8 +207,12 @@ class _MyHomePageState extends State<MyHomePage> {
               AppOnboardingEntry(
                 index: 5,
                 isAutoHidden: true,
-                tooltipSettings: const TooltipSettings(
-                  tooltipText: 'SECOND AUTO TOOLTIP!',
+                tooltipOffset: Offset(0, 10),
+                tooltipSettings: TooltipSettings(
+                  tooltipTextSettings: TooltipTextSettings(
+                    text: 'SECOND AUTO TOOLTIP!',
+                    textAlign: TextAlign.center,
+                  ),
                 ),
                 child: ElevatedButton(
                   onPressed: () {
@@ -219,6 +232,8 @@ class _MyHomePageState extends State<MyHomePage> {
             tooltipDirection: AppOnboardingTooltipDirection.bottom,
             completeText: 'Complete!',
           ),
+          holeBorderRadius: 100,
+          holeInnerPadding: 12,
           backgroundColor: Colors.blue.withOpacity(0.4),
           customOverlayBuilder: (context, index) {
             return Center(
@@ -244,7 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
                               child: const Column(
                                 children: [
                                   SizedBox(height: 50),
-                                  Text('You can do always!'),
+                                  Text('You can do all!'),
                                   SizedBox(height: 50),
                                 ],
                               ),
@@ -264,9 +279,10 @@ class _MyHomePageState extends State<MyHomePage> {
           child: AppOnboardingEntry(
             index: 4,
             isAutoHidden: true,
-            tooltipOffset: const Offset(-113, -20),
+            tooltipOffset: const Offset(-113, -15),
             tooltipSettings: const TooltipSettings(
-              tooltipText: 'THIS IS AUTO TOOLTIP!',
+              tooltipTextSettings:
+                  TooltipTextSettings(text: 'THIS IS AUTO TOOLTIP!'),
               tooltipDirection: AppOnboardingTooltipDirection.bottom,
               arrowPosition: AppOnboardingTooltipArrowPosition.right,
             ),

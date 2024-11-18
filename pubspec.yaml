@@ -1,6 +1,6 @@
 name: app_onboarding
 description: "Help you create onboarding with tooltips"
-version: 1.0.2
+version: 1.0.3
 homepage: https://github.com/crefter/app_onboarding
 repository: https://github.com/crefter/app_onboarding
 issue_tracker: https://github.com/crefter/app_onboarding/issues
@@ -16,6 +16,4 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  flutter_lints: ^4.0.0
-
-flutter:
+  flutter_lints: ^5.0.0

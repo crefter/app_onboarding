@@ -1,3 +1,9 @@
+## 1.0.3
+
+Upgrade flutter version
+
+Added tooltip text settings for the default tooltip for better customization
+
 ## 1.0.2
 
 Fix issues with images in readme.md

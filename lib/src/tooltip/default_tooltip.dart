@@ -76,6 +76,8 @@ class _DefaultAnimatedAutoTooltipState
           left: 12,
           right: 12,
         );
+    final tooltipTextSettings = settings.tooltipTextSettings;
+
     return FadeTransition(
       opacity: CurvedAnimation(
         parent: fadeTransition,
@@ -100,12 +102,13 @@ class _DefaultAnimatedAutoTooltipState
                     Expanded(
                       child: settings.autoHiddenContentBuilder == null
                           ? Text(
-                              settings.tooltipText,
-                              textAlign: TextAlign.start,
+                              tooltipTextSettings.text,
+                              style: tooltipTextSettings.textStyle,
+                              textAlign: tooltipTextSettings.textAlign,
                               maxLines: 50,
                             )
-                          : settings
-                              .autoHiddenContentBuilder!(settings.tooltipText),
+                          : settings.autoHiddenContentBuilder!(
+                              tooltipTextSettings.text),
                     ),
                   ],
                 ),
@@ -167,6 +170,11 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
           left: 12,
           right: 12,
         );
+    var tooltipTextSettings = settings.tooltipTextSettings;
+    var completeButtonSettings = settings.completeButtonSettings;
+    var skipButtonSettings = settings.skipButtonSettings;
+    var nextButtonSettings = settings.nextButtonSettings;
+
     return FadeTransition(
       opacity: CurvedAnimation(
         parent: animationController,
@@ -190,8 +198,9 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                   children: [
                     Expanded(
                       child: Text(
-                        settings.tooltipText,
-                        textAlign: TextAlign.start,
+                        tooltipTextSettings.text,
+                        style: tooltipTextSettings.textStyle,
+                        textAlign: tooltipTextSettings.textAlign,
                         maxLines: 50,
                       ),
                     ),
@@ -202,20 +211,18 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                   Row(
                     children: [
                       Expanded(
-                        child: settings.completeButtonSettings.buttonBuilder ==
-                                null
+                        child: completeButtonSettings.buttonBuilder == null
                             ? Material(
                                 type: MaterialType.transparency,
                                 child: ElevatedButton(
-                                  style: settings
-                                      .completeButtonSettings.buttonStyle,
+                                  style: completeButtonSettings.buttonStyle,
                                   onPressed: _onCompleteTap,
                                   child: Text(
                                     settings.completeText!,
                                   ),
                                 ),
                               )
-                            : settings.completeButtonSettings.buttonBuilder!(
+                            : completeButtonSettings.buttonBuilder!(
                                 settings.completeText!,
                                 _onCompleteTap,
                               ),
@@ -226,9 +233,9 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                   Row(
                     children: [
                       Expanded(
-                        child: settings.skipButtonSettings.buttonBuilder == null
+                        child: skipButtonSettings.buttonBuilder == null
                             ? ElevatedButton(
-                                style: settings.skipButtonSettings.buttonStyle,
+                                style: skipButtonSettings.buttonStyle,
                                 onPressed: _onSkipTap,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -237,16 +244,16 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                                   ],
                                 ),
                               )
-                            : settings.skipButtonSettings.buttonBuilder!(
+                            : skipButtonSettings.buttonBuilder!(
                                 settings.skipText,
                                 _onSkipTap,
                               ),
                       ),
                       const SizedBox(width: 4),
                       Expanded(
-                        child: settings.nextButtonSettings.buttonBuilder == null
+                        child: nextButtonSettings.buttonBuilder == null
                             ? ElevatedButton(
-                                style: settings.nextButtonSettings.buttonStyle,
+                                style: nextButtonSettings.buttonStyle,
                                 onPressed: _onNextTap,
                                 child: Row(
                                   mainAxisAlignment: MainAxisAlignment.center,
@@ -264,7 +271,7 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                                   ],
                                 ),
                               )
-                            : settings.nextButtonSettings.buttonBuilder!(
+                            : nextButtonSettings.buttonBuilder!(
                                 settings.nextText?.call(
                                       widget.index,
                                       widget.appOnboardingState.stepsLength,
@@ -307,15 +314,16 @@ class _HolePainter extends CustomPainter {
     required this.key,
     required this.backgroundColor,
     required this.borderRadius,
+    required this.padding,
   });
 
   final Color backgroundColor;
   final double borderRadius;
+  final double padding;
   final GlobalKey key;
 
   @override
   void paint(Canvas canvas, Size size) {
-    const padding = 6.0;
     final paintBack = Paint()..color = backgroundColor;
     final path = Path()
       ..addRect(
