@@ -14,7 +14,7 @@ Use this package in your Flutter app to:
 Add this to your package's pubspec.yaml file:
 ```
 dependencies:
-  app_onboarding: ^1.0.0
+  app_onboarding: ^1.0.3
 ```
 
 ## Usage
