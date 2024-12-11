@@ -232,55 +232,59 @@ class _DefaultAnimatedTooltipState extends State<_DefaultAnimatedTooltip>
                 else
                   Row(
                     children: [
-                      Expanded(
-                        child: skipButtonSettings.buttonBuilder == null
-                            ? ElevatedButton(
-                                style: skipButtonSettings.buttonStyle,
-                                onPressed: _onSkipTap,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(settings.skipText),
-                                  ],
+                      if (settings.skipText != null)
+                        Expanded(
+                          child: skipButtonSettings.buttonBuilder == null
+                              ? ElevatedButton(
+                                  style: skipButtonSettings.buttonStyle,
+                                  onPressed: _onSkipTap,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(settings.skipText!),
+                                    ],
+                                  ),
+                                )
+                              : skipButtonSettings.buttonBuilder!(
+                                  settings.skipText!,
+                                  _onSkipTap,
                                 ),
-                              )
-                            : skipButtonSettings.buttonBuilder!(
-                                settings.skipText,
-                                _onSkipTap,
-                              ),
-                      ),
-                      const SizedBox(width: 4),
-                      Expanded(
-                        child: nextButtonSettings.buttonBuilder == null
-                            ? ElevatedButton(
-                                style: nextButtonSettings.buttonStyle,
-                                onPressed: _onNextTap,
-                                child: Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      settings.nextText?.call(
-                                            widget.index,
-                                            widget
-                                                .appOnboardingState.stepsLength,
-                                            widget.appOnboardingState
-                                                .countAutoHidden,
-                                          ) ??
-                                          'Next',
-                                    ),
-                                  ],
+                        ),
+                      if (settings.buttonsGap > 0)
+                        SizedBox(width: settings.buttonsGap),
+                      if (settings.nextText != null)
+                        Expanded(
+                          child: nextButtonSettings.buttonBuilder == null
+                              ? ElevatedButton(
+                                  style: nextButtonSettings.buttonStyle,
+                                  onPressed: _onNextTap,
+                                  child: Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        settings.nextText?.call(
+                                              widget.index,
+                                              widget.appOnboardingState
+                                                  .stepsLength,
+                                              widget.appOnboardingState
+                                                  .countAutoHidden,
+                                            ) ??
+                                            'Next',
+                                      ),
+                                    ],
+                                  ),
+                                )
+                              : nextButtonSettings.buttonBuilder!(
+                                  settings.nextText?.call(
+                                        widget.index,
+                                        widget.appOnboardingState.stepsLength,
+                                        widget
+                                            .appOnboardingState.countAutoHidden,
+                                      ) ??
+                                      'Next',
+                                  _onNextTap,
                                 ),
-                              )
-                            : nextButtonSettings.buttonBuilder!(
-                                settings.nextText?.call(
-                                      widget.index,
-                                      widget.appOnboardingState.stepsLength,
-                                      widget.appOnboardingState.countAutoHidden,
-                                    ) ??
-                                    'Next',
-                                _onNextTap,
-                              ),
-                      ),
+                        ),
                     ],
                   ),
               ],

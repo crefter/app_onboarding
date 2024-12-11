@@ -44,7 +44,7 @@ class TooltipSettings {
   final String? completeText;
 
   /// Skip button`s text
-  final String skipText;
+  final String? skipText;
 
   final TooltipTextSettings tooltipTextSettings;
 
@@ -76,6 +76,7 @@ class TooltipSettings {
 
   /// Tooltip inner padding
   final EdgeInsets? padding;
+  final double buttonsGap;
 
   /// Skip button settings
   final ButtonSettings skipButtonSettings;
@@ -94,14 +95,15 @@ class TooltipSettings {
     this.tooltipTextSettings = const TooltipTextSettings(
       text: 'Text in tooltip',
     ),
-    this.skipText = 'Skip',
+    this.buttonsGap = 4,
+    this.skipText,
     this.nextText,
+    this.completeText,
     this.arrowPosition = AppOnboardingTooltipArrowPosition.center,
     this.tooltipDirection = AppOnboardingTooltipDirection.top,
-    this.completeText,
     this.onSkipTap,
-    this.onCompleteTap,
     this.onNextTap,
+    this.onCompleteTap,
     this.backgroundColor,
     this.padding,
     this.skipButtonSettings = const ButtonSettings(),

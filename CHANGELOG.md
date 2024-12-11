@@ -1,3 +1,8 @@
+## 1.0.5
+
+Need to set text for button so that it is visible.
+Moved the value of the gap between buttons to the TooltipSettings
+
 ## 1.0.4
 
 Update README.md

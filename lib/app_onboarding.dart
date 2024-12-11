@@ -1,4 +1,4 @@
-library app_onboarding;
+library;
 
 export 'src/app_onboarding.dart';
 export 'src/app_onboarding_entry.dart';
